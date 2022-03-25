@@ -7,16 +7,17 @@ router.get('/', (req, res) => {
   // find all tags
   // be sure to include its associated Product data
   try {
-    const data = await Product.findAll({
+    Tag.findAll({
       include: [{ model: Product }],
+    }).then((data)=>{
+
+      if(!data){
+        res.status(404).json({ message: "No tags exist." });
+        return;
+      }
+
+      res.status(200).json(data);
     });
-
-    if(!data){
-      res.status(404).json({ message: "No tags exist." });
-      return;
-    }
-
-    res.status(200).json(data);
   } catch (err){
     res.status(500).json(err);
   }
@@ -26,16 +27,17 @@ router.get('/:id', (req, res) => {
   // find a single tag by its `id`
   // be sure to include its associated Product data
   try {
-    const data = await Product.findByPk(req.params.id,{
+    Tag.findByPk(req.params.id,{
       include: [{ model: Product }],
+    }).then((data)=>{
+
+      if(!data){
+        res.status(404).json({ message: "No tag exists with given ID." });
+        return;
+      }
+
+      res.status(200).json(data);
     });
-
-    if(!data){
-      res.status(404).json({ message: "No tag exists with given ID." });
-      return;
-    }
-
-    res.status(200).json(data);
   } catch (err){
     res.status(500).json(err);
   }
@@ -44,11 +46,12 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
   // create a new tag
   try {
-    const data = await Product.create({
+    Tag.create({
       tag_name: req.body.tag_name,
-    });
+    }).then((data)=>{
 
-    res.status(200).json(data);
+      res.status(200).json(data);
+    });
   } catch (err){
     res.status(500).json(err);
   }
@@ -57,17 +60,20 @@ router.post('/', (req, res) => {
 router.put('/:id', (req, res) => {
   // update a tag's name by its `id` value
   try {
-    const data = await Product.update({
+    Tag.update({
+
       tag_name: req.body.tag_name},{
-      where: { id: req.body.id }
+      where: { id: req.params.id }
+
+    }).then((data)=>{
+
+      if(!data){
+        res.status(404).json({ message: "No tag exsts with given ID." });
+        return;
+      }
+
+      res.status(200).json({ message: "Tag updated." });
     });
-
-    if(!data){
-      res.status(404).json({ message: "No tag exsts with given ID." });
-      return;
-    }
-
-    res.status(200).json(data);
   } catch (err){
     res.status(500).json(err);
   }
@@ -76,16 +82,17 @@ router.put('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
   // delete on tag by its `id` value
   try {
-    const data = await Product.destroy({
-      where: { id: req.body.id }
+    Tag.destroy({
+      where: { id: req.params.id }
+    }).then((data)=>{
+
+      if(!data){
+        res.status(404).json({ message: "No tag exsts with given ID." });
+        return;
+      }
+
+      res.status(200).json({ message: "Tag deleted." });
     });
-
-    if(!data){
-      res.status(404).json({ message: "No tag exsts with given ID." });
-      return;
-    }
-
-    res.status(200).json(data);
   } catch (err){
     res.status(500).json(err);
   }

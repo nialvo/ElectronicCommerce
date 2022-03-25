@@ -8,16 +8,17 @@ router.get('/', (req, res) => {
   // find all products
   // be sure to include its associated Category and Tag data
   try {
-    const data = await Product.findAll({
+    Product.findAll({
       include: [{ model: Tag, model: Category }],
+    }).then((data)=>{
+
+      if(!data){
+        res.status(404).json({ message: "No products exist." });
+        return;
+      }
+
+      res.status(200).json(data);
     });
-
-    if(!data){
-      res.status(404).json({ message: "No products exist." });
-      return;
-    }
-
-    res.status(200).json(data);
   } catch (err){
     res.status(500).json(err);
   }
@@ -28,16 +29,17 @@ router.get('/:id', (req, res) => {
   // find a single product by its `id`
   // be sure to include its associated Category and Tag data
   try{
-    const data = await Product.findByPk(req.params.id,{
+    Product.findByPk(req.params.id,{
       include: [{ model: Tag, model: Category }],
-    });
+    }).then((data)=>{
 
-    if(!data){
-      res.status(404).json({ message: "No categories exist." });
-      return;
-    }
+      if(!data){
+        res.status(404).json({ message: "No categories exist." });
+        return;
+      }
     
-    res.status(200).json(data);
+      res.status(200).json(data);
+    });
   } catch (err){
     res.status(500).json(err);
   }
@@ -121,15 +123,16 @@ router.put('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
   // delete one product by its `id` value
   try{
-    const data = await Product.destroy({
+    Product.destroy({
       where: {id: req.params.id}
-    })  
+    }).then((data)=>{  
 
-    if(!data){
-      res.status(404).json({message: "No product exists with given ID."})
-      return;
-    }
-    res.status(200).json(data);
+      if(!data){
+        res.status(404).json({message: "No product exists with given ID."})
+        return;
+      }
+      res.status(200).json({ message: "Product deleted." });
+    });
   } catch (err){
     res.status(500).json(err);
   }
